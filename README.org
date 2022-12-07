@@ -1,0 +1,117 @@
+* Excerpt.el
+An personal excerpt manange system on Emacs.
+
+[[file:src/2022-12-07_17-00-56.png]]
+
+** Requirement
+- ~sqlite3~: Database to save excerpts.
+- [[https://github.com/magnars/dash.el][dash.el]]: A modern list API for Emacs.
+- [[https://github.com/magit/emacsql][emacsql]]: A high-level Emacs Lisp front-end for SQLite. 
+
+** Install
+Clone this to local directory, set ~load-path~ and ~require~.
+
+#+begin_src lisp
+(add-to-list 'load-path "/path/to/excerpt")
+
+;; database file
+(setq excerpt-database-file "~/.emacs.d/excerpt.db")
+
+(require 'excerpt)
+#+end_src
+
+** Usage
+By pressing ~M-x excerpt~, enter the ~*Excerpt*~ buffer. It shows all the excerpts in buffer.
+
+*** Key binding
+- ~j/n~ (~excerpt-next-excerpt~):  Move point to next excerpt.
+- ~k/p~ (~excerpt-previous-excerpt~): Move point to previous excerpt.
+- ~l/<tab>~ (~excerpt-next-tag~): Move point to next tag.
+- ~h/<backtab>~ (~excerpt-previous-tag~): Move point to previous tag.
+- ~a~ (~excerpt-add-excerpt~): Add a new excerpt. See [[Adding/Editing/Deleting excerpts]].
+- ~e~ (~excerpt-edit-excerpt~): Modify excerpt at point. See [[Adding/Editing/Deleting excerpts]].
+- ~d~ (~excerpt-delete-excerpt~): Delete exceprt ta point. See [[Adding/Editing/Deleting excerpts]].
+- ~g~ (~excerpt-refresh~): Refresh buffer.  
+- ~f~ (~excerpt-filter-map~): see [[Filtering]].
+- ~x~ (~excerpt-database-map~): see [[Importing/Exporting]]
+
+*** Filtering
+There are three ways to filter excerpts: by tags, by date, or by matching content. All the commands should be executed under ~excerpt-mode~. 
+
+Press ~f a~ or ~M-x excerpt-filter-all~ to show *all* excerpts in database again. 
+
+**** Filtering by tags
+*commands*: ~f t~ (~excerpt-filter-by-tags~)
+
+[[file:src/2022-12-07_17-29-06.png]]
+
+Tags are read from minibuffer. There are completions for existing tags.
+
+If multiple tags are input, make sure they are separated by comma ~,~.
+
+Note that, all the space in the beginning or end of tag will be removed by ~s-trim~, i.e. ~" tag1, tag2 3, tag4 "~ will become ~("tag1" "tag2 3" "tag4")~.
+
+**** Filtering by date
+*commands*: ~f d~ (~excerpt-filter-by-date~)
+
+[[file:src/2022-12-07_17-29-44.png]]
+
+Select a date in minibuffer, then all the excerpts recording in that date show in buffer.
+
+There are completions for date having excerpts.
+
+**** Filtering by matching content
+*commands*: ~f s~ (~excerpt-filter-by-content~)
+
+Input keywords in minibuffer to match the excerpts' body. Keywords are separated by space.
+
+Now there won't show completion when inputing strings. 
+
+*** Adding/Editing/Deleting excerpts
+Adding and editing commands invoke a buffer in ~excerpt-edit-mode~, on which you can operate the content of excerpt.
+
+[[file:src/2022-12-07_17-38-48.png]]
+
+- A line starting with ~;~ is considered as comment.
+- Tags start with ~#~, they can stay in one line, or multiple line.
+- ~C-c C-s~ to save the modification.
+- ~C-c C-k~ to discard the modification.
+- ~C-c C-i~ to insert a tag by completing in minibuffer.
+
+Once you modify(or add) an excerpt and save, editing buffer close, and showing buffer refreshes.
+
+When you try to delete an excerpt, there invokes a confirmation, namely you have to input yes-or-no.
+
+*** Importing/Exporting
+Now the external files are supportive only for JSON type. The form is like:
+#+begin_src js
+{
+    data: [
+        {
+            content: "cnt",
+            date: "1970-12-07",
+            tags: ["t1", "t2", ...]
+        }, ...
+    ]
+}
+#+end_src
+
+The whole structure has only one key ~data~, with an array as value. Each element in the array is a excerpt, consisting of three slots: ~content~, ~date~, and ~tags~, where ~tags~ is another array containing tags' string.
+
+**** Importing
+*commands*: ~x i~ (~excerpt-import~)
+
+Select a file in disk, excerpt.el then parse and append into database, which means it won't change the data existing in database, and do not care about if there ares duplicate excerpts -- It is really hard to tell whether two excerpts are the same.
+
+**** Exporting
+*commands*: ~x e~ (~excerpt-export~)
+
+Export the excerpts *in the buffer* to a JSON file. So you have to filter the excerpts you want, then execute exporting.
+
+** TODO
+- [ ] Adding abitary excerpts that are wanted to buffer
+- [ ] Allow to override the old data in importing
+- [ ] More importing/exporting data type supported
+- [ ] Match excerpts' body by regular expression
+- [ ] Custom faces
+- [ ] Daily review -- Show a random excerpt after Emacs starts, different from each days
