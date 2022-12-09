@@ -1,7 +1,6 @@
 (require 'excerpt-edit)
 (require 'excerpt-buffer)
 (require 'excerpt-filter)
-(require 'excerpt-test)
 
 (defun excerpt-next-tag (&optional N)
   "Move point to next tag.
