@@ -3,9 +3,11 @@
 (require 'emacsql)
 (require 'emacsql-sqlite)
 
+(defcustom excerpt-dir (f-expand "excerpt/"
+                                 user-emacs-directory)
+  "Where to save excerpt.el stuffs")
 
-(defcustom excerpt-database-file
-  (expand-file-name "excerpt.db" user-emacs-directory)
+(defcustom excerpt-database-file nil
   "Database")
 
 (defvar excerpt-db nil
@@ -13,10 +15,17 @@
 
 (defun excerpt-db-initialize ()
   "Create database and tables."
-  (setq excerpt-db (emacsql-sqlite excerpt-database-file))
+  (unless (f-dir-p excerpt-dir)
+    (make-directory excerpt-dir))
+  
+  (setq excerpt-database-file (f-expand "excerpt.db" excerpt-dir)
+        excerpt-db (emacsql-sqlite excerpt-database-file))
   (emacsql excerpt-db [:create-table
-                       :if :not :exists excerpt
-                       ([(id integer :primary-key) content date tags])]))
+                       :if-not-exists excerpt
+                       ([(id integer :primary-key) content date tags])])
+  (emacsql excerpt-db [:create-table
+                       :if-not-exists review
+                       ([key value])]))
 
 (defun excerpt--get-excerpt (id)
   "Return data of the excerpt with ID."
