@@ -6,6 +6,8 @@ An personal excerpt manange system on Emacs.
 ** Requirement
 - ~sqlite3~: Database to save excerpts.
 - [[https://github.com/magnars/dash.el][dash.el]]: A modern list API for Emacs.
+- [[https://github.com/rejeep/f.el][f.el]]: A modern API for working with files and directories in Emacs. 
+- [[https://github.com/magnars/s.el][s.el]]: The long lost Emacs string manipulation library.
 - [[https://github.com/magit/emacsql][emacsql]]: A high-level Emacs Lisp front-end for SQLite. 
 
 ** Install

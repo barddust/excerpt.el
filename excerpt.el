@@ -1,3 +1,6 @@
+(require 'f)
+(require 'dash)
+(require 's)
 (require 'excerpt-edit)
 (require 'excerpt-buffer)
 (require 'excerpt-filter)
@@ -99,6 +102,7 @@ With numeric prefix N, then to former N excerpt."
     (define-key map (kbd "x") excerpt-database-map)
     map))
 
+;;;###autoload
 (define-derived-mode excerpt-mode
   special-mode "Excerpt"
   "Major mode of excerpts management."
