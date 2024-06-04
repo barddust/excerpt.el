@@ -1,7 +1,7 @@
-
 ;;; require
 (require 'emacsql)
 (require 'emacsql-sqlite)
+(require 'f)
 
 (defcustom excerpt-dir (f-expand "excerpt/"
                                  user-emacs-directory)
@@ -17,7 +17,7 @@
   "Create database and tables."
   (unless (f-dir-p excerpt-dir)
     (make-directory excerpt-dir))
-  
+
   (setq excerpt-database-file (f-expand "excerpt.db" excerpt-dir)
         excerpt-db (emacsql-sqlite excerpt-database-file))
   (emacsql excerpt-db [:create-table
